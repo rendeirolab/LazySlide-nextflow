@@ -8,7 +8,7 @@ fi
 
 DATA_DIR=$1
 SCRIPT_DIR=$(dirname "$0")
-CSV_FILE="$SCRIPT_DIR/gtex_gastris.txt"
+CSV_FILE="$SCRIPT_DIR/gtex_input.txt"
 
 # Check if the CSV file exists
 if [ ! -f "$CSV_FILE" ]; then
@@ -20,7 +20,7 @@ fi
 mkdir -p "$DATA_DIR"
 
 # Copy the CSV file to the data directory
-cp "$CSV_FILE" "$DATA_DIR"
+cp "$CSV_FILE" "$DATA_DIR/input.csv"
 
 # Read the slide_id column and download the slides in parallel
 cat "$CSV_FILE" | awk -F, 'NR>1 {print $1}' | xargs -n 1 -P 4 -I {} sh -c '
