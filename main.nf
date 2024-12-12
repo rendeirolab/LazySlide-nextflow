@@ -90,6 +90,7 @@ workflow {
 
 process processWSI {
     tag { "${wsi_path}" }
+    label 'preprocess'
 
     input:
     val wsi_path
@@ -112,6 +113,7 @@ process processWSI {
 process featureExtraction {
 
     tag { "${model} ${wsi}" }
+    label 'feature_extraction'
 
     input:
     val wsi
@@ -121,14 +123,20 @@ process featureExtraction {
     val wsi, emit: wsis
 
     script:
+    def n_workers = (task.cpus / 2).toInteger()
+    if (n_workers > 8) {
+        n_workers = 8
+    }
     """
-    lazyslide feature ${wsi} --model ${model}
+    lazyslide feature ${wsi} --model ${model} --num-workers ${n_workers}
     """
 }
 
 
 
 process aggregateResults {
+    tag { "${model}" }
+    label 'aggregation'
 
     publishDir "${params.outdir}/agg", pattern: "*.zarr"
 
